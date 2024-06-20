@@ -4,8 +4,8 @@
   font-family: "bakbak one", sans-serif;
 
   color-scheme: dark;
-  color: rgb(255, 255, 255);
-  background-color: #0c3d3d;
+  color: black;
+  background-color: white;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -23,9 +23,6 @@ body {
 
   hr {
     width: 90%;
-    border-color: rgb(61, 131, 131);
-    background-color: rgb(61, 131, 131);
-    box-shadow: 0 0 3rem 3rem rgba(0, 255, 255, 0.062);
   }
 }
 
@@ -85,6 +82,7 @@ body {
     aspect-ratio: 1;
     border-radius: 1.5rem;
     padding-left: 0.05rem;
+    color: white;
     text-align: center;
     cursor: pointer;
     align-items: center;
@@ -132,7 +130,8 @@ body {
   margin-left: 2rem;
   margin-right: 2rem;
   height: 3rem;
-  background-color: white;
+  background-color: rgb(255, 255, 255);
+  border: 2px solid rgb(163, 163, 163);
   padding: 0.5rem;
   box-shadow: 0 0 1rem 0 white;
   border-radius: 2.5rem;
@@ -167,6 +166,7 @@ body {
   position: fixed;
   width: 4rem;
   height: 4rem;
+  color: white;
   background-color: rgb(17, 136, 126);
   box-shadow: 0 0 1rem 0 rgb(17, 136, 126);
   border-radius: 2rem;

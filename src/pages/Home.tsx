@@ -14,7 +14,7 @@ export function Home() {
 
     setAllBackgroundColor = setAllBGC
 
-    document.getElementById('root')!.style.backgroundColor = `rgb(${allBackgroundColor*12},${allBackgroundColor*61},${allBackgroundColor*61})`
+    document.getElementById('root')!.style.backgroundColor = "white"//`rgb(${allBackgroundColor*12},${allBackgroundColor*61},${allBackgroundColor*61})`
 
     return <><UpArrow></UpArrow><div className="home_list">
         <Headline/>
