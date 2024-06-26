@@ -13,7 +13,7 @@
 }
 
 .image_background {
-  background-image: url("background-image.png");
+  background-image: url("/background-image.png");
   background-position: center;
   background-size: cover;
   filter: blur(1rem);
@@ -23,7 +23,7 @@
   z-index: -1;
 
   &.-downimage {
-    background-image: url("visibility-image.png");
+    background-image: url("/visibility-image.png");
   }
 }
 
