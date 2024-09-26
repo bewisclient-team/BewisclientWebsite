@@ -35,7 +35,7 @@ export function Home() {
             <hr></hr>
             <ListTextWithImage index={2} headline="Pumpkin Overlay" subtext={"Bewisclient allows you to disable the pumpkin overlay"} image={"pumpkin.gif"}></ListTextWithImage>
         </div>
-        <BigBackgroundedText text="Better Visibility" subtext="allows you to see better in certain circumstances" />
+        <BigBackgroundedText text="Better Visibility" subtext="allows you to see better in some circumstances" />
         <div className="white_background">
             <br></br>
             <div style={{ display: "flex", justifyContent: "center" }}>
