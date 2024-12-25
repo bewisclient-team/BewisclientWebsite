@@ -2,12 +2,12 @@ import * as mod from "https://deno.land/std@0.217.0/http/file_server.ts";
 
 const kv = await Deno.openKv()
 
-if (Number((await kv.get(["TIME"])).value) - new Date().getTime() <= 0) {
+if (!(await kv.get(["TIME"])).value && Number((await kv.get(["TIME"])).value) - new Date().getTime() <= 0) {
     const formdata = new FormData()
 
     formdata.append("client_id", Deno.env.get("ID")!)
     formdata.append("client_secret", Deno.env.get("SECRET")!)
-    formdata.append("refresh_token", String((await kv.get(["REFRESH"])).value))
+    formdata.append("refresh_token", String((await kv.get(["REFRESH"]) ?? Deno.env.get("ORIGINAL_REFRESH")).value))
     formdata.append("grant_type", "refresh_token");
 
     const a = (await(await fetch("https://v5api.tiltify.com/oauth/token", {
