@@ -10,12 +10,12 @@ if (!(await kv.get(["TIME"])).value && Number((await kv.get(["TIME"])).value) - 
     formdata.append("refresh_token", String(((await kv.get(["REFRESH"])).value) ?? Deno.env.get("ORIGINAL_REFRESH")))
     formdata.append("grant_type", "refresh_token");
 
-    const a = (await(await fetch("https://v5api.tiltify.com/oauth/token", {
+    const a = (await (await fetch("https://v5api.tiltify.com/oauth/token", {
         method: "POST",
         body: formdata
     })).json())
-    
-    console.log("ACCESS TOKEN REFRESHED: "+JSON.stringify(a));
+
+    console.log("ACCESS TOKEN REFRESHED: " + JSON.stringify(a));
 
     if (a.refresh_token) {
         kv.set(["REFRESH"], a.refresh_token)
@@ -26,37 +26,49 @@ if (!(await kv.get(["TIME"])).value && Number((await kv.get(["TIME"])).value) - 
 
 const ID = "d1c5e494-2c56-429a-8eb6-ff049a928af8"
 
+let reloadTime = 0
+
 type money = { value: number, currency: string }
 let result: { goal: money; published_at: string; id: string; name: string; description: string; url: string; cause_id: string; slug: string; avatar: string; amount_raised: money; donate_url: string; }
 
 async function reloadResult(id: string) {
-    const res = (await (await fetch("https://v5api.tiltify.com/api/public/campaigns/" + id, {
-        headers: {
-            Authorization: "Bearer " + (await kv.get(["ACCESS"])).value
-        }
-    })).json()).data
+    try {
+        if (reloadTime + 600000 > new Date().getTime()) return
 
-    result = {
-        goal: res.goal,
-        published_at: res.published_at,
-        id: res.id,
-        name: res.name,
-        description: res.description,
-        url: res.url,
-        cause_id: res.cause_id,
-        slug: res.slug,
-        avatar: res.avatar,
-        amount_raised: res.amount_raised,
-        donate_url: res.donate_url
+        reloadTime = new Date().getTime()
+
+        const res = (await (await fetch("https://v5api.tiltify.com/api/public/campaigns/" + id, {
+            headers: {
+                Authorization: "Bearer " + (await kv.get(["ACCESS"])).value
+            }
+        })).json()).data
+
+        result = {
+            goal: res.goal,
+            published_at: res.published_at,
+            id: res.id,
+            name: res.name,
+            description: res.description,
+            url: res.url,
+            cause_id: res.cause_id,
+            slug: res.slug,
+            avatar: res.avatar,
+            amount_raised: res.amount_raised,
+            donate_url: res.donate_url
+        }
+    } catch (e) {
+        console.log(e);
     }
 }
 
 await reloadResult(ID)
 
-Deno.serve((req) => {
-    if (req.method == "GET" && new URL(req.url).pathname == "/api/donations")
+Deno.serve(async (req) => {
+    if (req.method == "GET" && new URL(req.url).pathname == "/api/donations") {
+        await reloadResult(ID)
+
         return new Response(JSON.stringify(result))
-    if (req.method != "GET")
+    } if (req.method != "GET")
         return new Response(null, {
             headers: {
                 Allow: "GET"
