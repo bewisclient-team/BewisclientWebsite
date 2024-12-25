@@ -7,15 +7,15 @@ if (!(await kv.get(["TIME"])).value && Number((await kv.get(["TIME"])).value) - 
 
     formdata.append("client_id", Deno.env.get("ID")!)
     formdata.append("client_secret", Deno.env.get("SECRET")!)
-    formdata.append("refresh_token", String((await kv.get(["REFRESH"]) ?? Deno.env.get("ORIGINAL_REFRESH")).value))
+    formdata.append("refresh_token", String(((await kv.get(["REFRESH"])).value) ?? Deno.env.get("ORIGINAL_REFRESH")))
     formdata.append("grant_type", "refresh_token");
 
     const a = (await(await fetch("https://v5api.tiltify.com/oauth/token", {
         method: "POST",
         body: formdata
     })).json())
-
-    console.log("ACCESS TOKEN REFRESHED");
+    
+    console.log("ACCESS TOKEN REFRESHED: "+JSON.stringify(a));
 
     if (a.refresh_token) {
         kv.set(["REFRESH"], a.refresh_token)
