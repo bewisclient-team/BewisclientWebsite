@@ -28,8 +28,15 @@ const ID = "d1c5e494-2c56-429a-8eb6-ff049a928af8"
 
 let reloadTime = 0
 
+const MIN_API_LEVEL = 1
+
+type response = { minimum_api_level: number, data: result }
 type money = { value: number, currency: string }
-let result: { goal: money; published_at: string; id: string; name: string; description: string; url: string; cause_id: string; slug: string; avatar: string; amount_raised: money; donate_url: string; }
+type avatar = { width: string, height: string, src: string, alt: string }
+type cause = { name: string, description: string, short_description: string, avatar: avatar, email: string, website: string }
+type result = { goal: money; published_at: string; id: string; name: string; description: string; url: string; cause: cause; slug: string; avatar: avatar; amount_raised: money; donate_url: string; }
+
+let result: result
 
 async function reloadResult(id: string) {
     try {
@@ -43,6 +50,12 @@ async function reloadResult(id: string) {
             }
         })).json()).data
 
+        const cause = (await (await fetch("https://v5api.tiltify.com/api/public/causes/" + res.cause_id, {
+            headers: {
+                Authorization: "Bearer " + (await kv.get(["ACCESS"])).value
+            }
+        })).json()).data
+
         result = {
             goal: res.goal,
             published_at: res.published_at,
@@ -50,7 +63,14 @@ async function reloadResult(id: string) {
             name: res.name,
             description: res.description,
             url: res.url,
-            cause_id: res.cause_id,
+            cause: {
+                name: cause.name,
+                description: cause.description,
+                short_description: cause.short_description,
+                email: cause.contact.email,
+                avatar: cause.avatar,
+                website: cause.social.website
+            },
             slug: res.slug,
             avatar: res.avatar,
             amount_raised: res.amount_raised,
@@ -67,7 +87,9 @@ Deno.serve(async (req) => {
     if (req.method == "GET" && new URL(req.url).pathname == "/api/donations") {
         await reloadResult(ID)
 
-        return new Response(JSON.stringify(result))
+        const response: response = { minimum_api_level: MIN_API_LEVEL, data: result }
+
+        return new Response(JSON.stringify(response))
     } if (req.method != "GET")
         return new Response(null, {
             headers: {
