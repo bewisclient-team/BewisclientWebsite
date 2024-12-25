@@ -2,7 +2,7 @@ import * as mod from "https://deno.land/std@0.217.0/http/file_server.ts";
 
 const kv = await Deno.openKv()
 
-if (!(await kv.get(["TIME"])).value && Number((await kv.get(["TIME"])).value) - new Date().getTime() <= 0) {
+async function refresh_token() {
     const formdata = new FormData()
 
     formdata.append("client_id", Deno.env.get("ID")!)
@@ -24,6 +24,8 @@ if (!(await kv.get(["TIME"])).value && Number((await kv.get(["TIME"])).value) - 
     }
 }
 
+await refresh_token()
+
 const ID = "d1c5e494-2c56-429a-8eb6-ff049a928af8"
 
 let reloadTime = 0
@@ -36,10 +38,14 @@ type avatar = { width: string, height: string, src: string, alt: string }
 type cause = { name: string, description: string, short_description: string, avatar: avatar, email: string, website: string }
 type result = { goal: money; published_at: string; id: string; name: string; description: string; url: string; cause: cause; slug: string; avatar: avatar; amount_raised: money; donate_url: string; }
 
-let result: result
+let tiltify_res: result
 
 async function reloadResult(id: string) {
     try {
+        if (!(await kv.get(["TIME"])).value && Number((await kv.get(["TIME"])).value) - new Date().getTime() <= 0) {
+            refresh_token()
+        }
+
         if (reloadTime + 600000 > new Date().getTime()) return
 
         reloadTime = new Date().getTime()
@@ -56,7 +62,7 @@ async function reloadResult(id: string) {
             }
         })).json()).data
 
-        result = {
+        tiltify_res = {
             goal: res.goal,
             published_at: res.published_at,
             id: res.id,
@@ -87,7 +93,7 @@ Deno.serve(async (req) => {
     if (req.method == "GET" && new URL(req.url).pathname == "/api/donations") {
         await reloadResult(ID)
 
-        const response: response = { minimum_api_level: MIN_API_LEVEL, data: result }
+        const response: response = { minimum_api_level: MIN_API_LEVEL, data: tiltify_res }
 
         return new Response(JSON.stringify(response))
     } if (req.method != "GET")
