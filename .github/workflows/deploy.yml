@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Deno
-        uses: denoland/setup-deno@v1
+        uses: denoland/setup-deno@v2
         with:
           deno-version: v1.x
 
@@ -38,5 +38,7 @@ jobs:
         uses: denoland/deployctl@v1
         with:
           project: "bewisclient"
-          entrypoint: "https://deno.land/std@0.217.0/http/file_server.ts"
-          root: "dist"
+          entrypoint: "backend/main.ts"
+          root: ""
+          
+          
