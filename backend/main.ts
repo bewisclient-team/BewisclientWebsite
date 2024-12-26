@@ -68,7 +68,7 @@ async function reloadResult(id: string) {
             id: res.id,
             name: res.name,
             description: res.description,
-            url: res.url,
+            url: "https://tiltify.com"+res.url,
             cause: {
                 name: cause.name,
                 description: cause.description,
