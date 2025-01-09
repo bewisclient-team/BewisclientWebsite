@@ -1,4 +1,5 @@
 import * as mod from "https://deno.land/std@0.217.0/http/file_server.ts";
+import { returnSpecials } from "./cape.ts";
 
 const kv = await Deno.openKv()
 
@@ -96,7 +97,12 @@ Deno.serve(async (req) => {
         const response: response = { minimum_api_level: MIN_API_LEVEL, data: tiltify_res }
 
         return new Response(JSON.stringify(response))
-    } if (req.method != "GET")
+    } else if (req.method == "POST" && new URL(req.url).pathname == "/api/specials") {
+        return await returnSpecials(req)
+    } else if (req.method == "POST" && new URL(req.url).pathname == "/api/cape") {
+        return new Response(null, { status: 501, statusText: "Not Implemented" });
+        // return await setCosmetic(req)
+    } else if (req.method != "GET")
         return new Response(null, {
             headers: {
                 Allow: "GET"
