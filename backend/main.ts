@@ -1,7 +1,42 @@
 import * as mod from "https://deno.land/std@0.217.0/http/file_server.ts";
-import { returnSpecials } from "./cape.ts";
+import { getOnLaunchArguments, loadCosmeticData, loadSpecialData, loadUserData, returnSpecials } from "./cape.ts";
 
-const kv = await Deno.openKv()
+export const kv = await Deno.openKv()
+
+let cosmetic_data = await loadCosmeticData()
+let special_data = await loadSpecialData()
+
+export const user_data: { [x: string]: { hat: string, cape: string, wing: string } }
+    = (await loadUserData()).reduce((a: { [x: string]: { hat: string, cape: string, wing: string } }, v: { uuid: string, hat: string, cape: string, wing: string }) => ({
+        ...a, [v.uuid]: {
+            cape: v.cape,
+            wing: v.wing,
+            hat: v.hat
+        }
+    }), {})
+
+let lastDataLoadingTime = new Date().getTime()
+
+async function checkExpiredData() {
+    if (lastDataLoadingTime + 600000 < new Date().getTime()) {
+        cosmetic_data = await loadCosmeticData()
+        special_data = await loadSpecialData()
+
+        lastDataLoadingTime = new Date().getTime()
+    }
+}
+
+export async function getCosmeticData() {
+    await checkExpiredData()
+
+    return cosmetic_data
+}
+
+export async function getSpecialData(uuid: string) {
+    await checkExpiredData()
+
+    return special_data.filter((item: { uuid: string }) => item.uuid == uuid)
+}
 
 async function refresh_token() {
     const formdata = new FormData()
@@ -69,7 +104,7 @@ async function reloadResult(id: string) {
             id: res.id,
             name: res.name,
             description: res.description,
-            url: "https://tiltify.com"+res.url,
+            url: "https://tiltify.com" + res.url,
             cause: {
                 name: cause.name,
                 description: cause.description,
@@ -97,6 +132,8 @@ Deno.serve(async (req) => {
         const response: response = { minimum_api_level: MIN_API_LEVEL, data: tiltify_res }
 
         return new Response(JSON.stringify(response))
+    } else if (req.method == "POST" && new URL(req.url).pathname == "/api/on_launch") {
+        return await getOnLaunchArguments(req)
     } else if (req.method == "POST" && new URL(req.url).pathname == "/api/specials") {
         return await returnSpecials(req)
     } else if (req.method == "POST" && new URL(req.url).pathname == "/api/cape") {
