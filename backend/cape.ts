@@ -1,19 +1,19 @@
 import { encodeBase64 } from "https://deno.land/std@0.217.0/encoding/base64.ts";
 import { verify } from "./auth.ts";
 import { supabase } from "./database.ts";
-import { getCosmeticData, getSpecialData, kv, user_data } from "./main.ts";
+import { getCosmeticData, getSpecialData, user_data } from "./main.ts";
 
 export async function setCosmetic(req: Request) {
     const access = req.headers.get("Authorization")?.split(" ")[1]
 
-    if(!access) return new Response(null, {
+    if (!access) return new Response(null, {
         status: 401,
         statusText: "Unauthorized"
     })
 
     const uuid = await verify(access)
 
-    if(!uuid) return new Response(null, {
+    if (!uuid) return new Response(null, {
         status: 401,
         statusText: "Unauthorized"
     })
@@ -79,17 +79,18 @@ export async function loadUserData() {
 
 export async function getOnLaunchArguments(req: Request) {
     const uuid = (await req.json()).uuid
-    
+
     const data = {
         specials: await getSpecialData(uuid),
         cosmetics: await getCosmeticData(),
-        user_data: await Object.entries(user_data).reduce(async (a: Promise<{ [x: string]: { hat: string; cape: string; wing: string; }; }>, v: [uuid: string, { hat: string; cape: string; wing: string; }]) => ({
-          ...(await a), [encodeBase64(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(v[0])))]: {
-            cape: v[1].cape,
-            wing: v[1].wing,
-            hat: v[1].hat
-          }
-        }), new Promise<{ [x: string]: { hat: string; cape: string; wing: string; }; }>(resolve => resolve({}))),
+        user_data: await Object.entries(user_data).map(async (v: [uuid: string, { hat: string; cape: string; wing: string; }]) => (
+            {
+                id: encodeBase64(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(v[0]))),
+                cape: v[1].cape,
+                wing: v[1].wing,
+                hat: v[1].hat
+            }
+        )),
     }
 
     return new Response(JSON.stringify(data), {
