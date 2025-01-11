@@ -84,12 +84,7 @@ export async function getOnLaunchArguments(req: Request) {
         specials: await getSpecialData(uuid),
         cosmetics: await getCosmeticData(),
         user_data: await Object.entries(user_data).map(async (v: [uuid: string, { hat: string; cape: string; wing: string; }]) => (
-            {
-                id: encodeBase64(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(v[0]))),
-                cape: v[1].cape,
-                wing: v[1].wing,
-                hat: v[1].hat
-            }
+            encodeBase64(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(v[0])))
         )),
     }
 
