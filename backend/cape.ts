@@ -66,7 +66,7 @@ export async function loadSpecialData() {
 }
 
 export async function loadCosmeticData() {
-    const { data } = await supabase.from('cosmetic_data').select('id, type').eq('default', true)
+    const { data } = await supabase.from('cosmetic_data').select('id, type, animated').eq('default', true)
 
     return data
 }
