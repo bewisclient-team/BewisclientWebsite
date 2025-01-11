@@ -94,9 +94,8 @@ export async function getOnLaunchArguments(req: Request) {
         specials: await getSpecialData(uuid),
         cosmetics: await getCosmeticData(),
         user_data: users,
+        current: user_data[uuid]
     }
-
-    console.log(data);
 
     return new Response(JSON.stringify(data), {
         status: 200,
