@@ -80,13 +80,23 @@ export async function loadUserData() {
 export async function getOnLaunchArguments(req: Request) {
     const uuid = (await req.json()).uuid
 
+    const u = Object.entries(user_data).map(async (v: [uuid: string, { hat: string; cape: string; wing: string; }]) => (
+        encodeBase64(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(v[0])))
+    ))
+
+    const users = []
+
+    for await (const user of u) {
+        users.push(user)
+    }
+
     const data = {
         specials: await getSpecialData(uuid),
         cosmetics: await getCosmeticData(),
-        user_data: await Object.entries(user_data).map(async (v: [uuid: string, { hat: string; cape: string; wing: string; }]) => (
-            encodeBase64(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(v[0])))
-        )),
+        user_data: users,
     }
+
+    console.log(data);
 
     return new Response(JSON.stringify(data), {
         status: 200,
