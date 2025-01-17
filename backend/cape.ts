@@ -96,7 +96,7 @@ export async function getOnLaunchArguments(req: Request) {
         user_data: users,
         current: user_data[uuid],
         min_api_level: 2,
-        base_url: "https://raw.githubusercontent.com/bewisclient-team/BewisclientWebsite/refs/heads/main/%s"
+        base_url: "https://raw.githubusercontent.com/bewisclient-team/BewisclientWebsite/refs/heads/main/cosmetics/%s"
     }
 
     return new Response(JSON.stringify(data), {
