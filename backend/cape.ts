@@ -71,7 +71,7 @@ export async function loadCosmeticData() {
     const { data }: { data: {id: string, type: string, frames: 0 }[]} = await supabase.from('cosmetic_data').select('id, type, frames').eq('default', true)
 
     return Promise.all(data.map(async a => {
-        return { ...a, hash: encodeBase64(await crypto.subtle.digest("SHA-256", await (await fetch(base_url.replace("%s",a.type+"/"+a.id+".png"))).bytes()))}
+        return { ...a, hash: encodeBase64(await crypto.subtle.digest("SHA-256", await (await fetch(base_url.replace("%s",a.type+"/"+a.id+(a.frames > 1 ? ".gif" : ".png")))).bytes()))}
     }))
 }
 
