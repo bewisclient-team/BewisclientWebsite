@@ -3,6 +3,8 @@ import { verify } from "./auth.ts";
 import { supabase } from "./database.ts";
 import { getCosmeticData, getSpecialData, user_data } from "./main.ts";
 
+const base_url = "https://raw.githubusercontent.com/bewisclient-team/BewisclientWebsite/refs/heads/main/cosmetics/%s"
+
 export async function setCosmetic(req: Request) {
     const access = req.headers.get("Authorization")?.split(" ")[1]
 
@@ -66,9 +68,11 @@ export async function loadSpecialData() {
 }
 
 export async function loadCosmeticData() {
-    const { data } = await supabase.from('cosmetic_data').select('id, type, frames').eq('default', true)
+    const { data }: { data: {id: string, type: string, frames: 0 }[]} = await supabase.from('cosmetic_data').select('id, type, frames').eq('default', true)
 
-    return data
+    return Promise.all(data.map(async a => {
+        return { ...a, hash: encodeBase64(await crypto.subtle.digest("SHA-256", await (await fetch(base_url.replace("%s",a.type+"/"+a.id+".png"))).bytes()))}
+    }))
 }
 
 export async function loadUserData() {
@@ -96,7 +100,7 @@ export async function getOnLaunchArguments(req: Request) {
         user_data: users,
         current: user_data[uuid],
         min_api_level: 2,
-        base_url: "https://raw.githubusercontent.com/bewisclient-team/BewisclientWebsite/refs/heads/main/cosmetics/%s"
+        base_url: base_url
     }
 
     return new Response(JSON.stringify(data), {
