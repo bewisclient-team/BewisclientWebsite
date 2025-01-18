@@ -6,6 +6,9 @@ export const kv = await Deno.openKv()
 let cosmetic_data = await loadCosmeticData()
 let special_data = await loadSpecialData()
 
+let token_time = (await kv.get(["TIME"])).value
+let access_token = (await kv.get(["ACCESS"])).value
+
 export const user_data: { [x: string]: { hat: string, cape: string, wing: string } }
     = (await loadUserData()).reduce((a: { [x: string]: { hat: string, cape: string, wing: string } }, v: { uuid: string, hat: string, cape: string, wing: string }) => ({
         ...a, [v.uuid]: {
@@ -57,6 +60,9 @@ async function refresh_token() {
         kv.set(["REFRESH"], a.refresh_token)
         kv.set(["ACCESS"], a.access_token)
         kv.set(["TIME"], new Date(a.created_at).getTime() + a.expires_in * 1000)
+
+        access_token = a.access_token
+        token_time = new Date(a.created_at).getTime() + a.expires_in * 1000
     }
 }
 
@@ -78,7 +84,7 @@ let tiltify_res: result
 
 async function reloadResult(id: string) {
     try {
-        if (!(await kv.get(["TIME"])).value && Number((await kv.get(["TIME"])).value) - new Date().getTime() <= 0) {
+        if (!token_time && Number(token_time) - new Date().getTime() <= 0) {
             refresh_token()
         }
 
@@ -88,13 +94,13 @@ async function reloadResult(id: string) {
 
         const res = (await (await fetch("https://v5api.tiltify.com/api/public/campaigns/" + id, {
             headers: {
-                Authorization: "Bearer " + (await kv.get(["ACCESS"])).value
+                Authorization: "Bearer " + access_token
             }
         })).json()).data
 
         const cause = (await (await fetch("https://v5api.tiltify.com/api/public/causes/" + res.cause_id, {
             headers: {
-                Authorization: "Bearer " + (await kv.get(["ACCESS"])).value
+                Authorization: "Bearer " + access_token
             }
         })).json()).data
 
