@@ -62,9 +62,9 @@ export async function returnSpecials(req: Request) {
 }
 
 export async function loadSpecialData() {
-    const { data } = await supabase.from('specials').select('type, id, uuid')
+    const { data }: { data: {name: string, type: string, uuid: string }[]} = await supabase.from('specials').select('type, name, uuid')
 
-    return data
+    return data.map((a) => ({ id: a.name, type: a.type, uuid: a.uuid }))
 }
 
 export async function loadCosmeticData() {
