@@ -155,5 +155,3 @@ Deno.serve(async (req) => {
         })
     return mod.serveDir(req, { fsRoot: "./dist" })
 })
-
-console.log(cosmetic_data);

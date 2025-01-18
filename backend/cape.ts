@@ -67,13 +67,17 @@ export async function returnSpecials(req: Request) {
 }
 
 export async function loadSpecialData() {
-    const { data }: { data: {name: string, type: string, uuid: string }[]} = await supabase.from('specials').select('type, name, uuid')
+    const { data } = (await supabase.from('specials').select('type, name, uuid'))
+    
+    if(data == null) return []
 
     return data.map((a) => ({ id: a.name, type: a.type, uuid: a.uuid }))
 }
 
 export async function loadCosmeticData() {
-    const { data }: { data: {id: string, type: string, frames: 0 }[]} = await supabase.from('cosmetic_data').select('id, type, frames, default')
+    const { data } = await supabase.from('cosmetic_data').select('id, type, frames, default')
+    
+    if(data == null) return []
 
     return Promise.all(data.map(async a => {
         return { ...a, hash: encodeBase64(await crypto.subtle.digest("SHA-256", await (await fetch(base_url.replace("%s",a.type+"/"+a.id+(a.frames > 1 ? ".gif" : ".png")))).bytes()))}
@@ -82,6 +86,8 @@ export async function loadCosmeticData() {
 
 export async function loadUserData() {
     const { data } = await supabase.from('cosmetics').select('uuid, cape, wing, hat')
+    
+    if(data == null) return []
 
     return data
 }
