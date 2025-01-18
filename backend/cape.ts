@@ -6,6 +6,11 @@ import { getCosmeticData, getSpecialData, user_data } from "./main.ts";
 const base_url = "https://raw.githubusercontent.com/bewisclient-team/BewisclientWebsite/refs/heads/main/cosmetics/%s"
 
 export async function setCosmetic(req: Request) {
+    // Always true if clause, formulated this weirdly because of vs code 
+
+    if(req.url)
+        return new Response(null, { status: 501, statusText: "Not Implemented" })
+
     const access = req.headers.get("Authorization")?.split(" ")[1]
 
     if (!access) return new Response(null, {
@@ -97,8 +102,8 @@ export async function getOnLaunchArguments(req: Request) {
     const data = {
         specials: await getSpecialData(uuid),
         cosmetics: await getCosmeticData(),
-        user_data: users,
-        current: user_data[uuid],
+        user_data: [], //users,
+        // current: user_data[uuid],
         min_api_level: 2,
         base_url: base_url
     }
