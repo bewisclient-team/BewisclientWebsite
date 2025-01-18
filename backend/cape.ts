@@ -62,7 +62,7 @@ export async function returnSpecials(req: Request) {
 }
 
 export async function loadSpecialData() {
-    const { data } = await supabase.from('specials').select('type, name, uuid')
+    const { data } = await supabase.from('specials').select('type, id, uuid')
 
     return data
 }
