@@ -75,7 +75,7 @@ export async function loadSpecialData() {
 }
 
 export async function loadCosmeticData() {
-    const { data } = await supabase.from('cosmetic_data').select('id, type, frames, default, old_id')
+    const { data } = await supabase.from('cosmetic_data').select('id, type, frames, default, old_id, has_elytra')
     
     if(data == null) return []
 
