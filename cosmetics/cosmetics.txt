@@ -1,16 +1,16 @@
-cape/breeze: default frames=1
-cape/cat_eyes: frames=1 elytra
 hat/christmas: default frames=1
-cape/creaking: default frames=1
+hat/headphone: default frames=1
+hat/technoblade: default frames=1
 wing/ender_dragon: default frames=1
 wing/fire: default frames=1
 cape/golden_creeper: default frames=32 elytra
-hat/headphone: default frames=1
 cape/minecon2011: default frames=1 elytra
 cape/portal: default frames=1
-cape/queer: frames=1
-cape/spear: default frames=32 elytra
-hat/technoblade: default frames=1
 cape/world: default frames=1 elytra
-cape/sulfur_cube_empty: default frames=1
-cape/sulfur_cube_magma: default frames=1
+cape/breeze: default frames=1 category=updates
+cape/creaking: default frames=1 category=updates
+cape/spear: default frames=32 elytra category=updates
+cape/sulfur_cube_empty: default frames=1 category=updates
+cape/sulfur_cube_magma: default frames=1 category=updates
+cape/cat_eyes: frames=1 elytra
+cape/queer: frames=1
