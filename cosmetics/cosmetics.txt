@@ -1,3 +1,8 @@
+[Metadata]
+minimum=3.3
+url=https://bewisclient.bewis09minecraft.workers.dev/api/
+
+[Cosmetics]
 hat/christmas: default frames=1
 hat/headphone: default frames=1
 hat/technoblade: default frames=1
