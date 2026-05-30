@@ -13,3 +13,4 @@ cape/spear: default frames=32 elytra
 hat/technoblade: default frames=1
 cape/world: default frames=1 elytra
 cape/sulfur_cube_empty: default frames=1
+cape/sulfur_cube_magma: default frames=1
