@@ -1,5 +1,5 @@
 [Metadata]
-minimum=3.3
+minimum=3.3-beta.1
 url=https://bewisclient.bewis09minecraft.workers.dev/api/
 
 [Cosmetics]
